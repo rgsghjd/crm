@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties resource="jdbc.properties"/>
+<typeAliases>
+    <package name="cg/software/settings/domain"/>
+    <!--市场活动-->
+    <package name="cg/software/workbench/domain"/>
+</typeAliases>
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.connection}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.use}"/>
+                <property name="password" value="${jdbc.pwd}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <package name="cg/software/settings/dao"/>
+        <package name="cg/software/workbench/dao"/>
+    </mappers>
+</configuration>

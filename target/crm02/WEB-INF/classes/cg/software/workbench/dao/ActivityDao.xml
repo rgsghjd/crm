@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cg.software.workbench.dao.ActivityDao">
+    <select id="showList" resultType="Activity">
+        select
+        a.id,
+        a.name,
+        a.startDate,
+        a.endDate,
+        u.name as owner
+        from  tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+
+        where a.name like '%' #{aName} '%' and a.id not in
+        (select activityId from tbl_clue_activity_relation where clueId=#{id})
+
+
+    </select>
+    <select id="getList" resultType="Activity">
+        select
+        a.name,
+        a.startDate,
+        a.endDate,
+        u.name as owner,
+        c.id as id
+        from tbl_activity a
+        join tbl_user u
+        on u.id=a.owner
+        join tbl_clue_activity_relation c
+        on a.id=c.activityId
+        where c.clueId=#{id}
+     </select>
+    <select id="detail" resultType="Activity">
+        select
+        a.id,
+        u.name as owner,
+        a.name,
+        a.startDate,
+        a.endDate,
+        a.cost,
+        a.description,
+        a.createTime,
+        a.createBy,
+        a.editTime,
+        a.editBy
+        from tbl_activity a
+        join  tbl_user u
+        on a.owner=u.id
+        where a.id=#{id}
+
+
+    </select>
+
+    <update id="update">
+        update tbl_activity set
+        owner=#{owner},
+        name=#{name},
+        startDate=#{startDate},
+        endDate=#{endDate},
+        cost=#{cost},
+        description=#{description},
+        editTime=#{editTime},
+        editBy=#{editBy}
+        where id=#{id}
+
+    </update>
+    <select id="edit" resultType="Activity">
+        select * from tbl_activity
+        where id=#{id}
+    </select>
+    <delete id="delete">
+        delete from tbl_activity
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="pageList" resultType="cg.software.workbench.domain.Activity">
+        select a.id,a.name,u.name as owner,a.startDate,a.endDate
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        <where>
+            <if test="name !=null and name !=''">
+             a.name like '%' #{name} '%'
+            </if>
+            <if test="owner !=null and owner !=''">
+            and u.name like '%' #{owner} '%'
+            </if>
+            <if test="startTime !=null and startTime !=''">
+            and startDate &gt; #{startTime}
+            </if>
+            <if test="startTime !=null and startTime!=''">
+            and endDate &lt; #{endTime}
+            </if>
+
+        </where>
+        order by a.createTime desc
+        limit #{skipCount},#{PageSize}
+    </select>
+    <select id="pageTotal" resultType="int">
+        select count(*)
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        <where>
+            <if test="name !=null and name !=''">
+                a.name like '%' #{name} '%'
+            </if>
+            <if test="owner !=null and owner !=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="startTime !=null and startTime !=''">
+                and startDate &gt; #{startTime}
+            </if>
+            <if test="startTime !=null and startTime!=''">
+                and endDate &lt; #{endTime}
+            </if>
+
+        </where>
+    </select>
+<insert id="save">
+    insert into tbl_activity(
+    id,
+    owner,
+    name,
+    startDate,
+    endDate,
+    cost,
+    description,
+    createTime,
+    createBy
+)
+values(
+    #{id},
+    #{owner},
+    #{name},
+    #{startDate},
+    #{endDate},
+    #{cost},
+    #{description},
+    #{createTime},
+    #{createBy}
+    )
+</insert>
+
+</mapper>
